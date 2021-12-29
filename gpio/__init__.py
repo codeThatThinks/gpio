@@ -16,7 +16,6 @@ _open_pins = {}
 GPIO_ROOT = '/sys/class/gpio'
 GPIO_EXPORT = os.path.join(GPIO_ROOT, 'export')
 GPIO_UNEXPORT = os.path.join(GPIO_ROOT, 'unexport')
-FMODE = 'w+'  # w+ overwrites and truncates existing files
 IN, OUT = 'in', 'out'
 LOW, HIGH = 0, 1
 
@@ -46,7 +45,7 @@ class GPIOPin(object):
 
         if not os.path.exists(self.root):
             with _export_lock:
-                with open(GPIO_EXPORT, FMODE) as f:
+                with open(GPIO_EXPORT, 'w') as f:
                     f.write(str(self.pin))
                     f.flush()
 
@@ -100,7 +99,7 @@ class GPIOPin(object):
         Returns:
             str: "in" or "out"
         '''
-        with open(os.path.join(self.root, 'direction'), FMODE) as f:
+        with open(os.path.join(self.root, 'direction'), 'r') as f:
             return f.read().strip()
 
     def set_direction(self, mode):
@@ -112,7 +111,7 @@ class GPIOPin(object):
         if mode not in (IN, OUT, LOW, HIGH):
             raise ValueError("Unsupported pin mode {}".format(mode))
 
-        with open(os.path.join(self.root, 'direction'), FMODE) as f:
+        with open(os.path.join(self.root, 'direction'), 'w') as f:
             f.write(str(mode))
             f.flush()
 
@@ -125,7 +124,7 @@ class GPIOPin(object):
         if not isinstance(active_low, bool):
             raise ValueError("active_low must be True or False")
 
-        with open(os.path.join(self.root, 'active_low'), FMODE) as f:
+        with open(os.path.join(self.root, 'active_low'), 'w') as f:
             f.write('1' if active_low else '0')
             f.flush()
 
@@ -168,7 +167,7 @@ class GPIOPin(object):
 
         if os.path.exists(self.root):
             with _export_lock:
-                with open(GPIO_UNEXPORT, FMODE) as f:
+                with open(GPIO_UNEXPORT, 'w') as f:
                     f.write(str(self.pin))
                     f.flush()
 
