@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __version__ = '1.0.0'
 
-from threading import Lock
+from multiprocessing import Lock
 try:
     from collections.abc import Iterable
 except ImportError:
